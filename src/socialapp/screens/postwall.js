@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
-import Posts from './postcard';
+import Posts from '../components/postcard';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
 
