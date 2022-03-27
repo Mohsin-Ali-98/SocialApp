@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {
@@ -28,8 +29,12 @@ const Register = () => {
   const [email, setemail] = useState('');
   const [pass, setpass] = useState('');
   const [passeye, setpasseye] = useState(true);
+  const [credentiales, setcredentials] = useState(false);
+  const [error, seterror] = useState(null);
+  const [loader, setloader] = useState(false);
 
   const Register = () => {
+    setloader(true);
     if ((name != '', email != '', pass != '')) {
       auth()
         .createUserWithEmailAndPassword(email, pass)
@@ -40,19 +45,15 @@ const Register = () => {
               routes: [{name: 'list'}],
             }),
           );
+          setname('');
+          setemail('');
+          setpass('');
         })
         .catch(err => {
-          if (err.code === 'auth/email-already-in-use') {
-            Alert.alert('Email already in use');
-          }
-          if (err.code === 'auth/invalid-email') {
-            Alert.alert('That email address is invalid!');
-          }
+          setcredentials(true);
+          seterror(err.code);
+          setloader(false);
         });
-
-      setname('');
-      setemail('');
-      setpass('');
     } else {
       Alert.alert('please fill all the fields');
     }
@@ -64,53 +65,33 @@ const Register = () => {
         <Header title="Register" />
       </View>
       <View style={styles.inputview}>
-        <View style={styles.userfield}>
+        <View style={[error ? styles.warnuser : styles.userfield]}>
           <TextInput
             value={name}
             placeholder="Enter Username"
             placeholderTextColor="black"
             onChangeText={i => setname(i)}
             keyboardType="default"
-            style={{
-              width: '75%',
-              height: '50%',
-              backgroundColor: '#ebeef2',
-              elevation: 20,
-              color: 'black',
-              fontSize: 15,
-              paddingLeft: 20,
-              borderTopLeftRadius: 10,
-              borderBottomLeftRadius: 10,
-            }}
+            style={styles.textinput}
           />
           <View style={styles.eye}>
             <FontAwesomeIcon icon={faUser} size={30} />
           </View>
         </View>
-        <View style={styles.emailfield}>
+        <View style={[error ? styles.warnuser : styles.emailfield]}>
           <TextInput
             value={email}
             placeholder="Enter Email-address"
             placeholderTextColor="black"
             onChangeText={i => setemail(i)}
             keyboardType="email-address"
-            style={{
-              width: '75%',
-              height: '50%',
-              backgroundColor: '#ebeef2',
-              elevation: 20,
-              color: 'black',
-              fontSize: 15,
-              paddingLeft: 20,
-              borderTopLeftRadius: 10,
-              borderBottomLeftRadius: 10,
-            }}
+            style={styles.textinput}
           />
           <View style={styles.eye}>
             <FontAwesomeIcon icon={faMailBulk} size={30} />
           </View>
         </View>
-        <View style={styles.passfield}>
+        <View style={[error ? styles.warnuser : styles.passfield]}>
           <TextInput
             value={pass}
             placeholder="Enter Password"
@@ -120,18 +101,7 @@ const Register = () => {
             // secureTextEntry
             onChangeText={i => setpass(i)}
             placeholderTextColor="black"
-            style={{
-              width: '75%',
-              height: '50%',
-              backgroundColor: '#ebeef2',
-              // borderRadius: 10,
-              borderTopLeftRadius: 10,
-              borderBottomLeftRadius: 10,
-              elevation: 20,
-              color: 'black',
-              fontSize: 15,
-              paddingLeft: 20,
-            }}
+            style={styles.textinput}
           />
           <TouchableOpacity
             style={styles.eye}
@@ -145,6 +115,20 @@ const Register = () => {
             )}
           </TouchableOpacity>
         </View>
+        {credentiales ? (
+          <View style={styles.warnview}>
+            {error === 'auth/email-already-in-use' ? (
+              <Text style={{color: 'red', fontSize: 15}}>
+                Email Alreardy in use
+              </Text>
+            ) : null}
+            {error === 'auth/invalid-email' ? (
+              <Text style={{color: 'red', fontSize: 15}}>
+                Email/Password Invalid
+              </Text>
+            ) : null}
+          </View>
+        ) : null}
       </View>
       <View style={styles.btnview}>
         <TouchableOpacity
@@ -152,9 +136,13 @@ const Register = () => {
           onPress={() => {
             Register();
           }}>
-          <Text style={{color: 'black', fontSize: 20, fontWeight: 'bold'}}>
-            Register
-          </Text>
+          {loader ? (
+            <ActivityIndicator size="large" color="black" />
+          ) : (
+            <Text style={{color: 'black', fontSize: 20, fontWeight: 'bold'}}>
+              Register
+            </Text>
+          )}
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -177,39 +165,57 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
   userfield: {
-    height: '40%',
-    width: '100%',
+    height: '25%',
+    width: '95%',
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
-    // shadowColor: '#000',
-    // shadowOffset: {
-    //   width: 0,
-    //   height: 11,
-    // },
-    // shadowOpacity: 0.57,
-    // shadowRadius: 15.19,
-
-    // elevation: 23,
+    alignSelf: 'center',
+  },
+  warnuser: {
+    height: '25%',
+    width: '95%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    alignSelf: 'center',
+    elevation: 20,
+    borderColor: 'red',
+    borderWidth: 2,
+    borderRadius: 10,
   },
   emailfield: {
-    height: '40%',
-    width: '100%',
+    height: '25%',
+    width: '95%',
     // backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
+    alignSelf: 'center',
   },
   passfield: {
-    height: '40%',
-    width: '100%',
-    // backgroundColor: 'white',
+    height: '25%',
+    width: '95%',
+    // backgroundColor: 'red',
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
+    alignSelf: 'center',
+  },
+  textinput: {
+    width: '80%',
+    height: '100%',
+    backgroundColor: '#ebeef2',
+    // borderRadius: 10,
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
+    elevation: 20,
+    color: 'black',
+    fontSize: 15,
+    paddingLeft: 20,
   },
   eye: {
-    height: '50%',
+    height: '100%',
     width: '20%',
     backgroundColor: '#ebeef2',
     borderBottomRightRadius: 10,
@@ -217,6 +223,17 @@ const styles = StyleSheet.create({
     elevation: 40,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  warnview: {
+    height: '20%',
+    width: '90%',
+    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    flexDirection: 'row',
+    borderRadius: 5,
+    elevation: 20,
   },
   btnview: {
     height: '20%',
@@ -226,7 +243,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
   btn: {
-    height: '50%',
+    height: '60%',
     width: '40%',
     backgroundColor: '#a6baed',
     borderRadius: 30,

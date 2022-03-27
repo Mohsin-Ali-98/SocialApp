@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faEye, faEyeSlash, faUser} from '@fortawesome/free-solid-svg-icons';
@@ -15,40 +16,37 @@ import {StackActions, useNavigation} from '@react-navigation/native';
 import Header from '../components/header';
 import {CommonActions} from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
+
 const Login = () => {
   const navigation = useNavigation();
   const [text, settext] = useState('');
   const [pass, setpass] = useState('');
   const [passeye, setpasseye] = useState(true);
-  // firebase states
-  const [initializing, setinitializing] = useState(true);
-  const [user, setuser] = useState();
-
-  function onAuthStateChanged(user) {
-    setuser(user);
-    if (initializing) setinitializing(false);
-  }
-
-  useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    return subscriber; // unsubscribe on unmount
-  }, []);
+  const [cred, setcred] = useState(false);
+  const [error, seterror] = useState(null);
+  const [loader, setloader] = useState(false);
 
   const Login = () => {
+    setloader(true);
     if ((text != '', pass != '')) {
-      if (initializing) return null;
-      if (!user) {
-        Alert.alert('User not avalible please Sign in');
-      } else {
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{name: 'list'}],
-          }),
-        );
-        settext('');
-        setpass('');
-      }
+      auth()
+        .signInWithEmailAndPassword(text, pass)
+        .then(() => {
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{name: 'list'}],
+            }),
+          );
+          settext('');
+          setpass('');
+        })
+        .catch(err => {
+          setcred(true);
+          seterror(err.code);
+          setloader(false);
+          console.log(error);
+        });
     } else {
       Alert.alert('please fill all the fields');
     }
@@ -57,36 +55,30 @@ const Login = () => {
     navigation.navigate('register');
   };
 
+  const Loader = () => {
+    setloader(false);
+  };
+
   return (
     <KeyboardAvoidingView style={styles.container} onPress={Keyboard.dismiss}>
       <View style={styles.imgview}>
         <Header title="LOG IN" />
       </View>
       <View style={styles.inputview}>
-        <View style={styles.userfield}>
+        <View style={[error ? styles.warnuser : styles.userfield]}>
           <TextInput
             value={text}
             placeholder="Enter Username"
             placeholderTextColor="black"
             onChangeText={i => settext(i)}
             keyboardType="email-address"
-            style={{
-              width: '75%',
-              height: '70%',
-              backgroundColor: '#ebeef2',
-              elevation: 20,
-              color: 'black',
-              fontSize: 15,
-              paddingLeft: 20,
-              borderTopLeftRadius: 10,
-              borderBottomLeftRadius: 10,
-            }}
+            style={styles.textinput}
           />
-          <View style={styles.eye}>
+          <View style={styles.icon}>
             <FontAwesomeIcon icon={faUser} size={30} />
           </View>
         </View>
-        <View style={styles.passfield}>
+        <View style={[error ? styles.warnuser : styles.passfield]}>
           <TextInput
             value={pass}
             placeholder="Enter Password"
@@ -96,21 +88,10 @@ const Login = () => {
             // secureTextEntry
             onChangeText={i => setpass(i)}
             placeholderTextColor="black"
-            style={{
-              width: '75%',
-              height: '70%',
-              backgroundColor: '#ebeef2',
-              // borderRadius: 10,
-              borderTopLeftRadius: 10,
-              borderBottomLeftRadius: 10,
-              elevation: 20,
-              color: 'black',
-              fontSize: 15,
-              paddingLeft: 20,
-            }}
+            style={styles.textinput}
           />
           <TouchableOpacity
-            style={styles.eye}
+            style={styles.icon}
             onPress={() => {
               setpasseye(!passeye);
             }}>
@@ -121,6 +102,15 @@ const Login = () => {
             )}
           </TouchableOpacity>
         </View>
+        {cred ? (
+          <View style={styles.warnview}>
+            {error === 'auth/invalid-email' ? (
+              <Text style={{color: 'red', fontSize: 15}}>
+                Invalid Email or pass
+              </Text>
+            ) : null}
+          </View>
+        ) : null}
       </View>
       <View style={styles.btnview}>
         <TouchableOpacity
@@ -137,9 +127,13 @@ const Login = () => {
           onPress={() => {
             Login();
           }}>
-          <Text style={{color: 'black', fontSize: 20, fontWeight: 'bold'}}>
-            Login
-          </Text>
+          {loader ? (
+            <ActivityIndicator size="large" color="black" />
+          ) : (
+            <Text style={{color: 'black', fontSize: 20, fontWeight: 'bold'}}>
+              Login
+            </Text>
+          )}
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -162,36 +156,64 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
   },
   userfield: {
-    height: '40%',
-    width: '100%',
+    height: '30%',
+    width: '95%',
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
-    // shadowColor: '#000',
-    // shadowOffset: {
-    //   width: 0,
-    //   height: 11,
-    // },
-    // shadowOpacity: 0.57,
-    // shadowRadius: 15.19,
-
-    // elevation: 23,
+    alignSelf: 'center',
+    elevation: 20,
+  },
+  warnuser: {
+    height: '30%',
+    width: '95%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    alignSelf: 'center',
+    elevation: 20,
+    borderColor: 'red',
+    borderWidth: 2,
+    borderRadius: 10,
   },
   passfield: {
-    height: '40%',
-    width: '100%',
-    // backgroundColor: 'white',
+    height: '30%',
+    width: '95%',
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
+    alignSelf: 'center',
+    // elevation: 20,
   },
-  eye: {
-    height: '70%',
+  textinput: {
+    width: '80%',
+    height: '100%',
+    backgroundColor: '#ebeef2',
+    elevation: 20,
+    color: 'black',
+    fontSize: 15,
+    paddingLeft: 20,
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
+  },
+  warnview: {
+    height: '20%',
+    width: '90%',
+    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    flexDirection: 'row',
+    borderRadius: 5,
+    elevation: 20,
+  },
+  icon: {
+    height: '100%',
     width: '20%',
     backgroundColor: '#ebeef2',
     borderBottomRightRadius: 10,
     borderTopRightRadius: 10,
-    elevation: 40,
+    elevation: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },
