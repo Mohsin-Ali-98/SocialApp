@@ -17,6 +17,8 @@ import Header from '../components/header';
 import {CommonActions} from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const Login = () => {
   const navigation = useNavigation();
   const [text, settext] = useState('');
@@ -25,6 +27,7 @@ const Login = () => {
   const [cred, setcred] = useState(false);
   const [error, seterror] = useState(null);
   const [loader, setloader] = useState(false);
+  const [session, setsession] = useState(null);
 
   const Login = () => {
     setloader(true);
@@ -40,6 +43,10 @@ const Login = () => {
           );
           settext('');
           setpass('');
+          var status = session;
+          setsession(true);
+          AsyncStorage.setItem('session_status', status);
+          // _storeData();
         })
         .catch(err => {
           setcred(true);
@@ -49,6 +56,14 @@ const Login = () => {
         });
     } else {
       Alert.alert('please fill all the fields');
+    }
+  };
+
+  _storeData = async status => {
+    try {
+      await AsyncStorage.setItem('session_status', status);
+    } catch (error) {
+      console.log(error);
     }
   };
   const Register = () => {

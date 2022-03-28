@@ -3,19 +3,38 @@ import {View, Text, StyleSheet} from 'react-native';
 import {StackActions, useNavigation} from '@react-navigation/native';
 import {CommonActions} from '@react-navigation/native';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const Splash = () => {
   const navigation = useNavigation();
   useEffect(() => {
-    setTimeout(() => {
-      SplashNavigation(), 1000;
+    AsyncStorage.getItem('session_status').then(status => {
+      if (status == true) {
+        setTimeout(() => {
+          SplashtoPost(), 1000;
+        });
+      } else {
+        setTimeout(() => {
+          SplashtoLogin(), 1000;
+        });
+      }
     });
   }, []);
 
-  const SplashNavigation = () => {
+  const SplashtoLogin = () => {
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
         routes: [{name: 'login'}],
+      }),
+    );
+  };
+
+  const SplashtoPost = () => {
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{name: 'list'}],
       }),
     );
   };
