@@ -8,18 +8,31 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const Splash = () => {
   const navigation = useNavigation();
   useEffect(() => {
-    AsyncStorage.getItem('session_status').then(status => {
-      if (status == true) {
+    setTimeout(() => {
+      RetriveAsyncData(), 1000;
+    });
+  }, []);
+
+  const RetriveAsyncData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('session_status');
+      if (value == 'true') {
         setTimeout(() => {
           SplashtoPost(), 1000;
+        });
+      } else if (value == 'false') {
+        setTimeout(() => {
+          SplashtoLogin(), 1000;
         });
       } else {
         setTimeout(() => {
           SplashtoLogin(), 1000;
         });
       }
-    });
-  }, []);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const SplashtoLogin = () => {
     navigation.dispatch(

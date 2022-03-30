@@ -27,7 +27,6 @@ const Login = () => {
   const [cred, setcred] = useState(false);
   const [error, seterror] = useState(null);
   const [loader, setloader] = useState(false);
-  const [session, setsession] = useState(null);
 
   const Login = () => {
     setloader(true);
@@ -43,10 +42,8 @@ const Login = () => {
           );
           settext('');
           setpass('');
-          var status = session;
-          setsession(true);
-          AsyncStorage.setItem('session_status', status);
-          // _storeData();
+          storeData();
+          // AsyncStorage.setItem('session_status', status);
         })
         .catch(err => {
           setcred(true);
@@ -59,9 +56,9 @@ const Login = () => {
     }
   };
 
-  _storeData = async status => {
+  const storeData = async () => {
     try {
-      await AsyncStorage.setItem('session_status', status);
+      await AsyncStorage.setItem('session_status', 'true');
     } catch (error) {
       console.log(error);
     }

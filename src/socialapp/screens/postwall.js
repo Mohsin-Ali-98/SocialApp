@@ -10,6 +10,8 @@ import React, {useState, useEffect} from 'react';
 import Posts from '../components/postcard';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {CommonActions} from '@react-navigation/native';
 
 const ListApi = () => {
   const navigation = useNavigation();
@@ -23,7 +25,7 @@ const ListApi = () => {
     fetch('https://jsonplaceholder.typicode.com/posts')
       .then(res => res.json())
       .then(res => {
-        console.log(res[1]);
+        // console.log(res[1]);
         setlist(res);
       })
       .catch(err => {
@@ -44,6 +46,8 @@ const ListApi = () => {
         body: text,
         id: newindex + 1,
       });
+    } else {
+      alert('Field Empty');
     }
 
     fetch('https://jsonplaceholder.typicode.com/posts', {
@@ -76,23 +80,55 @@ const ListApi = () => {
     );
   };
 
+  const Logout = async () => {
+    try {
+      await AsyncStorage.setItem('session_status', 'false');
+    } catch (err) {
+      console.log(err);
+    }
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{name: 'login'}],
+      }),
+    );
+  };
+
   return (
     <SafeAreaView style={styles.mainview}>
       <View style={styles.header}>
-        <Text style={{fontSize: 20, fontStyle: 'italic', fontWeight: 'bold'}}>
-          POSTS
-        </Text>
+        <View style={styles.postheaderview}>
+          <Text style={{fontSize: 20, fontStyle: 'italic', fontWeight: 'bold'}}>
+            POSTS
+          </Text>
+        </View>
+        <View style={styles.logoutview}>
+          <TouchableOpacity
+            style={styles.logoutbtn}
+            onPress={() => {
+              Logout();
+            }}>
+            <Text
+              style={{fontSize: 15, fontStyle: 'italic', fontWeight: 'bold'}}>
+              Logout
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
       <View style={styles.input}>
         <TextInput
           value={text}
           placeholder="Enter newpost"
+          placeholderTextColor="black"
           onChangeText={i => settext(i)}
           style={{
             width: '80%',
             height: '90%',
-            backgroundColor: '#3e3f4f',
+            backgroundColor: '#ebeef2',
             borderRadius: 10,
+            color: 'black',
+            paddingLeft: 20,
+            elevation: 20,
           }}
         />
         <TouchableOpacity
@@ -136,9 +172,35 @@ const styles = StyleSheet.create({
   },
   header: {
     height: '10%',
+    width: '100%',
     backgroundColor: '#4367c4',
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'row',
+  },
+  postheaderview: {
+    height: '100%',
+    width: '80%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingLeft: 20,
+  },
+  logoutview: {
+    height: '100%',
+    width: '20%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logoutbtn: {
+    height: '75%',
+    width: '80%',
+    backgroundColor: 'black',
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderColor: '#a6baed',
+    borderWidth: 2,
+    elevation: 20,
   },
   input: {
     height: '10%',
@@ -155,6 +217,7 @@ const styles = StyleSheet.create({
     borderColor: '#4367c4',
     borderWidth: 5,
     borderRadius: 20,
+    elevation: 20,
   },
   list: {
     height: '80%',

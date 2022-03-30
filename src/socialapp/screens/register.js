@@ -34,7 +34,6 @@ const Register = () => {
   const [credentiales, setcredentials] = useState(false);
   const [error, seterror] = useState(null);
   const [loader, setloader] = useState(false);
-  const [session, setsession] = useState(null);
 
   const Register = () => {
     setloader(true);
@@ -51,9 +50,8 @@ const Register = () => {
           setname('');
           setemail('');
           setpass('');
-          var status = session;
-          setsession(true);
-          AsyncStorage.setItem('session_status', status);
+          // AsyncStorage.setItem('session_status', true);
+          storeData();
         })
         .catch(err => {
           setcredentials(true);
@@ -64,9 +62,9 @@ const Register = () => {
       Alert.alert('please fill all the fields');
     }
   };
-  _storeData = async status => {
+  const storeData = async () => {
     try {
-      await AsyncStorage.setItem('session_status', status);
+      await AsyncStorage.setItem('session_status', 'true');
     } catch (error) {
       console.log(error);
     }
