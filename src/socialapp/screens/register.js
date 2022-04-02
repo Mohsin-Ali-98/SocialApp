@@ -34,10 +34,18 @@ const Register = () => {
   const [credentiales, setcredentials] = useState(false);
   const [error, seterror] = useState(null);
   const [loader, setloader] = useState(false);
+  const [warn, setwarn] = useState(false);
+  const [noname, setnoname] = useState(false);
+  const [noemail, setnoemail] = useState(false);
+  const [nopass, setnopass] = useState(false);
+  const [nopassnmail, setnopassnmail] = useState(false);
+  const [nopassnuser, setnopassnuser] = useState(false);
+  const [noemailnuser, setnoemailnuser] = useState(false);
+  const [nofield, setnofield] = useState(true);
 
   const Register = () => {
     setloader(true);
-    if ((name != '', email != '', pass != '')) {
+    if (name != '' && email != '' && pass != '') {
       auth()
         .createUserWithEmailAndPassword(email, pass)
         .then(() => {
@@ -57,9 +65,99 @@ const Register = () => {
           setcredentials(true);
           seterror(err.code);
           setloader(false);
+          setwarn(true);
+          setnofield(false);
+          setnoemail(false);
+          setnoname(false);
+          setnopass(false);
+          setnopassnmail(false);
+          setnoemailnuser(false);
+          setnopassnuser(false);
         });
-    } else {
-      Alert.alert('please fill all the fields');
+    } else if (name != '' && email == '' && pass == '') {
+      setnoname(false);
+      setnoemail(false);
+      setnopass(false);
+      setnofield(false);
+      setnopassnmail(true);
+      setnoemailnuser(false);
+      setnopassnuser(false);
+      setcredentials(true);
+      setwarn(true);
+      setloader(false);
+      seterror(null);
+    } else if (name == '' && email == '' && pass != '') {
+      setnoname(false);
+      setnoemail(false);
+      setnopass(false);
+      setnofield(false);
+      setnopassnmail(false);
+      setnoemailnuser(true);
+      setnopassnuser(false);
+      setcredentials(true);
+      setwarn(true);
+      setloader(false);
+      seterror(null);
+    } else if (name == '' && email != '' && pass == '') {
+      setnoname(false);
+      setnoemail(false);
+      setnopass(false);
+      setnofield(false);
+      setnopassnmail(false);
+      setnoemailnuser(false);
+      setnopassnuser(true);
+      setcredentials(true);
+      setwarn(true);
+      setloader(false);
+      seterror(null);
+    } else if (name == '' && email != '' && pass != '') {
+      setnoname(true);
+      setnoemail(false);
+      setnopass(false);
+      setnofield(false);
+      setnopassnmail(false);
+      setnoemailnuser(false);
+      setnopassnuser(false);
+      setcredentials(true);
+      setwarn(true);
+      setloader(false);
+      seterror(null);
+    } else if (name != '' && email == '' && pass != '') {
+      setnoname(false);
+      setnoemail(true);
+      setnopass(false);
+      setnofield(false);
+      setnopassnmail(false);
+      setnoemailnuser(false);
+      setnopassnuser(false);
+      setcredentials(true);
+      setwarn(true);
+      setloader(false);
+      seterror(null);
+    } else if (name != '' && email != '' && pass == '') {
+      setnoname(false);
+      setnoemail(false);
+      setnopass(true);
+      setnofield(false);
+      setnopassnmail(false);
+      setnoemailnuser(false);
+      setnopassnuser(false);
+      setcredentials(true);
+      setwarn(true);
+      setloader(false);
+      seterror(null);
+    } else if (name == '' && email == '' && pass == '') {
+      setnofield(true);
+      setnoname(false);
+      setnoemail(false);
+      setnopass(false);
+      setnopassnmail(false);
+      setnoemailnuser(false);
+      setnopassnuser(false);
+      setcredentials(true);
+      setwarn(true);
+      seterror(null);
+      setloader(false);
     }
   };
   const storeData = async () => {
@@ -76,7 +174,7 @@ const Register = () => {
         <Header title="Register" />
       </View>
       <View style={styles.inputview}>
-        <View style={[error ? styles.warnuser : styles.userfield]}>
+        <View style={[warn ? styles.warnuser : styles.userfield]}>
           <TextInput
             value={name}
             placeholder="Enter Username"
@@ -89,7 +187,7 @@ const Register = () => {
             <FontAwesomeIcon icon={faUser} size={30} />
           </View>
         </View>
-        <View style={[error ? styles.warnuser : styles.emailfield]}>
+        <View style={[warn ? styles.warnuser : styles.emailfield]}>
           <TextInput
             value={email}
             placeholder="Enter Email-address"
@@ -102,7 +200,7 @@ const Register = () => {
             <FontAwesomeIcon icon={faMailBulk} size={30} />
           </View>
         </View>
-        <View style={[error ? styles.warnuser : styles.passfield]}>
+        <View style={[warn ? styles.warnuser : styles.passfield]}>
           <TextInput
             value={pass}
             placeholder="Enter Password"
@@ -137,6 +235,33 @@ const Register = () => {
               <Text style={{color: 'red', fontSize: 15}}>
                 Email/Password Invalid
               </Text>
+            ) : null}
+            {nopassnmail ? (
+              <Text style={{color: 'red', fontSize: 15}}>
+                Enter Email / Password{' '}
+              </Text>
+            ) : null}
+            {noemailnuser ? (
+              <Text style={{color: 'red', fontSize: 15}}>
+                Enter Email / UserName
+              </Text>
+            ) : null}
+            {nopassnuser ? (
+              <Text style={{color: 'red', fontSize: 15}}>
+                Enter Password / UserName{' '}
+              </Text>
+            ) : null}
+            {noemail ? (
+              <Text style={{color: 'red', fontSize: 15}}>Enter Email</Text>
+            ) : null}
+            {nopass ? (
+              <Text style={{color: 'red', fontSize: 15}}>Enter Password</Text>
+            ) : null}
+            {noname ? (
+              <Text style={{color: 'red', fontSize: 15}}>Enter UserName</Text>
+            ) : null}
+            {nofield ? (
+              <Text style={{color: 'red', fontSize: 15}}>Fields Empty</Text>
             ) : null}
           </View>
         ) : null}

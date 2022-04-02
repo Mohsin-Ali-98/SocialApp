@@ -27,6 +27,7 @@ const ListApi = () => {
       .then(res => {
         // console.log(res[1]);
         setlist(res);
+        list.reverse();
       })
       .catch(err => {
         alert(err);
@@ -109,7 +110,12 @@ const ListApi = () => {
               Logout();
             }}>
             <Text
-              style={{fontSize: 15, fontStyle: 'italic', fontWeight: 'bold'}}>
+              style={{
+                fontSize: 15,
+                fontStyle: 'italic',
+                fontWeight: 'bold',
+                color: 'white',
+              }}>
               Logout
             </Text>
           </TouchableOpacity>

@@ -27,10 +27,14 @@ const Login = () => {
   const [cred, setcred] = useState(false);
   const [error, seterror] = useState(null);
   const [loader, setloader] = useState(false);
+  const [emailnot, setemailnot] = useState(false);
+  const [passnot, setpassnot] = useState(false);
+  const [bothnot, setbothnot] = useState(false);
+  const [warn, setwarn] = useState(false);
 
   const Login = () => {
     setloader(true);
-    if ((text != '', pass != '')) {
+    if (text != '' && pass != '') {
       auth()
         .signInWithEmailAndPassword(text, pass)
         .then(() => {
@@ -43,16 +47,37 @@ const Login = () => {
           settext('');
           setpass('');
           storeData();
-          // AsyncStorage.setItem('session_status', status);
         })
         .catch(err => {
           setcred(true);
           seterror(err.code);
+          setbothnot(false);
+          setemailnot(false);
+          setpassnot(false);
           setloader(false);
+          setwarn(true);
           console.log(error);
         });
-    } else {
-      Alert.alert('please fill all the fields');
+    } else if (text == '' && pass != '') {
+      setemailnot(true);
+      setpassnot(false);
+      setbothnot(false);
+      setloader(false);
+      setcred(true);
+      setwarn(true);
+    } else if (text != '' && pass == '') {
+      setpassnot(true);
+      setemailnot(false);
+      setbothnot(false);
+      setloader(false);
+      setcred(true);
+      setwarn(true);
+    } else if (text == '' && pass == '') {
+      setbothnot(true);
+      setloader(false);
+      setcred(true);
+      seterror(null);
+      setwarn(true);
     }
   };
 
@@ -67,17 +92,13 @@ const Login = () => {
     navigation.navigate('register');
   };
 
-  const Loader = () => {
-    setloader(false);
-  };
-
   return (
     <KeyboardAvoidingView style={styles.container} onPress={Keyboard.dismiss}>
       <View style={styles.imgview}>
         <Header title="LOG IN" />
       </View>
       <View style={styles.inputview}>
-        <View style={[error ? styles.warnuser : styles.userfield]}>
+        <View style={[warn ? styles.warnuser : styles.userfield]}>
           <TextInput
             value={text}
             placeholder="Enter Username"
@@ -90,7 +111,7 @@ const Login = () => {
             <FontAwesomeIcon icon={faUser} size={30} />
           </View>
         </View>
-        <View style={[error ? styles.warnuser : styles.passfield]}>
+        <View style={[warn ? styles.warnuser : styles.passfield]}>
           <TextInput
             value={pass}
             placeholder="Enter Password"
@@ -116,11 +137,29 @@ const Login = () => {
         </View>
         {cred ? (
           <View style={styles.warnview}>
-            {error === 'auth/invalid-email' ? (
-              <Text style={{color: 'red', fontSize: 15}}>
-                Invalid Email or pass
-              </Text>
-            ) : null}
+            <View style={styles.warninside}>
+              {error === 'auth/invalid-email' ? (
+                <Text style={{color: 'red', fontSize: 15}}>
+                  Invalid Email or pass
+                </Text>
+              ) : null}
+
+              {emailnot ? (
+                <Text style={{color: 'red', fontSize: 15}}>
+                  Please Enter Email
+                </Text>
+              ) : null}
+
+              {passnot ? (
+                <Text style={{color: 'red', fontSize: 15}}>
+                  Please Enter Password
+                </Text>
+              ) : null}
+
+              {bothnot ? (
+                <Text style={{color: 'red', fontSize: 15}}>Fields Empty</Text>
+              ) : null}
+            </View>
           </View>
         ) : null}
       </View>
@@ -214,11 +253,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
-    alignSelf: 'center',
     flexDirection: 'row',
+    alignSelf: 'center',
     borderRadius: 5,
     elevation: 20,
   },
+
   icon: {
     height: '100%',
     width: '20%',
@@ -248,3 +288,5 @@ const styles = StyleSheet.create({
 });
 
 export default Login;
+
+// personal token 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
