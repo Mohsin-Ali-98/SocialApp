@@ -24,10 +24,6 @@ const Splash = () => {
         setTimeout(() => {
           SplashtoLogin(), 1000;
         });
-      } else {
-        setTimeout(() => {
-          SplashtoLogin(), 1000;
-        });
       }
     } catch (err) {
       console.log(err);

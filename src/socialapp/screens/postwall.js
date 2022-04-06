@@ -98,6 +98,7 @@ const ListApi = () => {
   return (
     <SafeAreaView style={styles.mainview}>
       <View style={styles.header}>
+        <View style={styles.drawerview}></View>
         <View style={styles.postheaderview}>
           <Text style={{fontSize: 20, fontStyle: 'italic', fontWeight: 'bold'}}>
             POSTS
