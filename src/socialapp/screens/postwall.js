@@ -9,12 +9,15 @@ import {
 import React, {useState, useEffect} from 'react';
 import Posts from '../components/postcard';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {useNavigation} from '@react-navigation/native';
+import {DrawerActions, useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {CommonActions} from '@react-navigation/native';
 
-const ListApi = () => {
-  const navigation = useNavigation();
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import {faBars} from '@fortawesome/free-solid-svg-icons';
+
+const ListApi = ({navigation}) => {
+  const navigations = useNavigation();
 
   const [text, settext] = useState('');
   const [list, setlist] = useState([]);
@@ -35,7 +38,7 @@ const ListApi = () => {
   }, []);
 
   const Details = item => {
-    navigation.navigate('details', {
+    navigations.navigate('details', {
       item,
     });
   };
@@ -87,7 +90,7 @@ const ListApi = () => {
     } catch (err) {
       console.log(err);
     }
-    navigation.dispatch(
+    navigations.dispatch(
       CommonActions.reset({
         index: 0,
         routes: [{name: 'login'}],
@@ -95,10 +98,23 @@ const ListApi = () => {
     );
   };
 
+  const DrawerOpen = () => {
+    // navigations.dispatch(DrawerActions.openDrawer());
+    console.log(navigation);
+    console.log(navigations);
+    // navigation.navigate.toggleDrawer();
+  };
+
   return (
     <SafeAreaView style={styles.mainview}>
       <View style={styles.header}>
-        <View style={styles.drawerview}></View>
+        <TouchableOpacity
+          style={styles.drawerview}
+          onPress={() => {
+            DrawerOpen();
+          }}>
+          <FontAwesomeIcon icon={faBars} size={30} />
+        </TouchableOpacity>
         <View style={styles.postheaderview}>
           <Text style={{fontSize: 20, fontStyle: 'italic', fontWeight: 'bold'}}>
             POSTS
@@ -185,9 +201,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
   },
+  drawerview: {
+    height: '100%',
+    width: '20%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   postheaderview: {
     height: '100%',
-    width: '80%',
+    width: '60%',
     alignItems: 'center',
     justifyContent: 'center',
     paddingLeft: 20,

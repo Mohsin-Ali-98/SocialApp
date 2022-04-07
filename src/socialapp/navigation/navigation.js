@@ -34,16 +34,19 @@ const NavigationStacks = () => {
 
 const DrawerNavigation = () => {
   return (
-    <Drawer.Navigator initialRouteName="list">
+    <Drawer.Navigator
+      drawerContent={props => <DrawerContents {...props} />}
+      initialRouteName="list"
+      screenOptions={{
+        drawerStyle: {
+          backgroundColor: '#c6cbef',
+          width: '40%',
+        },
+      }}>
       <Drawer.Screen
         name="list"
         component={ListApi}
         options={{drawerLabel: 'HOME'}}
-      />
-      <Drawer.Screen
-        name="details"
-        component={Details}
-        options={{drawerLabel: 'POST'}}
       />
     </Drawer.Navigator>
   );

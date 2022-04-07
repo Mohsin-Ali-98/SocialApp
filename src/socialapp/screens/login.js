@@ -144,19 +144,19 @@ const Login = () => {
                 </Text>
               ) : null}
 
-              {emailnot ? (
+              {text == '' ? (
                 <Text style={{color: 'red', fontSize: 15}}>
                   Please Enter Email
                 </Text>
               ) : null}
 
-              {passnot ? (
+              {pass == '' ? (
                 <Text style={{color: 'red', fontSize: 15}}>
                   Please Enter Password
                 </Text>
               ) : null}
 
-              {bothnot ? (
+              {text == '' && pass == '' ? (
                 <Text style={{color: 'red', fontSize: 15}}>Fields Empty</Text>
               ) : null}
             </View>
