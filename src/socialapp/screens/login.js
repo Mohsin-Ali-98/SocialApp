@@ -41,7 +41,7 @@ const Login = () => {
           navigation.dispatch(
             CommonActions.reset({
               index: 0,
-              routes: [{name: 'list'}],
+              routes: [{name: 'drawer'}],
             }),
           );
           settext('');
@@ -144,19 +144,19 @@ const Login = () => {
                 </Text>
               ) : null}
 
-              {text == '' ? (
+              {emailnot == '' ? (
                 <Text style={{color: 'red', fontSize: 15}}>
                   Please Enter Email
                 </Text>
               ) : null}
 
-              {pass == '' ? (
+              {passnot == '' ? (
                 <Text style={{color: 'red', fontSize: 15}}>
                   Please Enter Password
                 </Text>
               ) : null}
 
-              {text == '' && pass == '' ? (
+              {bothnot ? (
                 <Text style={{color: 'red', fontSize: 15}}>Fields Empty</Text>
               ) : null}
             </View>

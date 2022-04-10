@@ -99,7 +99,7 @@ const ListApi = ({navigation}) => {
   };
 
   const DrawerOpen = () => {
-    // navigations.dispatch(DrawerActions.openDrawer());
+    navigations.dispatch(DrawerActions.toggleDrawer());
     console.log(navigation);
     console.log(navigations);
     // navigation.navigate.toggleDrawer();
